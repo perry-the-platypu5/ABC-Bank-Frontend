@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Customer Information</title>
+</head>
+<body>
+    <h2>Update Customer Information</h2>
+    <form id="customerForm">
+        <label for="customerId">Customer ID:</label><br>
+        <input type="number" id="Id" name="Id"><br><br>
+
+        <label for="username">Username:</label><br>
+        <input type="text" id="userName" name="userName"><br><br>
+
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address"><br><br>
+
+        <label for="age">Age:</label><br>
+        <input type="number" id="age" name="age"><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br><br>
+
+        <label for="phoneno">Phone Number:</label><br>
+        <input type="tel" id="phoneNo" name="phoneNo" pattern="[0-9]{10}" placeholder="Format: 9876543210"><br><br>
+
+        <input type="submit" value="Update">
+    </form>
+
+    <script>
+        document.getElementById("customerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var customerId = document.getElementById("Id").value;
+            var username = document.getElementById("userName").value;
+            var address = document.getElementById("address").value;
+            var age = document.getElementById("age").value;
+            var email = document.getElementById("email").value;
+            var phoneno = document.getElementById("phoneNo").value;
+            var customerData = {
+                userName: username,
+                address: address,
+                age: age,
+                email: email,
+                phoneNo: phoneno
+            };
+            fetch(`http://localhost:4242/customer/update/${customerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(customerData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert('Customer information updated successfully!');
+            })
+            .catch(error => {
+                console.error('Error updating customer information:', error);
+                alert('Error updating customer information. Please try again later.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+	<head>
+	    <meta charset="UTF-8">
+	    <title>Bank Transaction</title>
+	    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<style>
+			th, td {
+			  padding: 15px;
+			}
+		</style>
+	</head>
+	<body>
+	<h1 th:text="'Welcome ' + ${c.userName}"></h1>
+	<h2 th:text="'Balance : Rs ' + ${c.balance}" id="mainBalance"></h2>
+	    
+	<h3>Deposit</h3>
+	<form id="depositForm">
+	    <input type="number" id="depositAmount" placeholder="Enter amount" required>
+	    <button type="button" onclick="deposit()">Deposit</button>
+	</form>
+	
+	<h3>Withdraw</h3>
+	<form id="withdrawForm">
+	    <input type="number" id="withdrawAmount" placeholder="Enter amount" required>
+	    <button type="button" onclick="withdraw()">Withdraw</button>
+	</form>
+	
+	<br/>
+	<br/>
+	<button onclick="getBalance()">Get Updated Balance</button>
+	
+	<h2>Transaction Details</h2>
+	    
+	    <button onclick="fetchTransactionDetails()">Fetch Transaction Details</button>
+	    <br/>
+	    <div id="transactionDetails" style="display: none;">
+	        <table border="1.5">
+	            <thead>
+	                <tr>
+	                    <th>Amount</th>
+	                    <th>Date & Time</th>
+	                    <th>Type</th>
+	                </tr>
+	            </thead>
+	            <tbody id="transactionBody">
+	            </tbody>
+	        </table>
+	    </div>
+	
+	<script>
+	    function deposit() {
+			var amount = parseFloat($('#depositAmount').val());
+			if(amount<0){
+				alert('Error in deposit');
+				return;
+			}
+	        var customerId = [[${c.id}]];
+	        $.ajax({
+	            url: 'http://localhost:4242/transaction/deposit/' + customerId,
+	            type: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify({ amount: amount }),
+	            success: function() {
+	                alert('Deposit successful');
+	            },
+	            error: function() {
+	                alert('Error in deposit');
+	            }
+	        });
+	    }
+	
+	    function withdraw() {
+			var amount = parseFloat($('#withdrawAmount').val());
+			if(amount<0){
+					alert('Error in withdrawl');
+					return;
+			}
+	        var customerId = [[${c.id}]];
+	        $.ajax({
+	            url: 'http://localhost:4242/transaction/withdraw/' + customerId,
+	            type: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify({ amount: amount }),
+	            success: function() {
+	                alert('Withdrawal successful');
+	            },
+	            error: function() {
+	                alert('Error in withdrawal');
+	            }
+	        });
+	    }
+	
+	    function getBalance() {
+	        var customerId = [[${c.id}]];
+	        $.ajax({
+	            url: 'http://localhost:4242/customer/getone/' + customerId,
+	            type: 'GET',
+	            success: function(data) {
+					$('#mainBalance').html('Balance : Rs '+data.balance);
+	            },
+	            error: function() {
+	                alert('Error in getting balance');
+	            }
+	        });
+	    }
+		
+		function fetchTransactionDetails() {
+		    var id = [[${c.id}]];
+		    $.get('http://localhost:4242/transaction/get/' + id, function(data) {
+		        displayTransactionDetails(data);
+		    });
+		}
+		
+		function displayTransactionDetails(data) {
+		    var transactionList = data.transactionList;
+		    var transactionBody = $('#transactionBody');
+		    
+		    transactionBody.empty();
+		    
+		    transactionList.forEach(function(transaction) {
+		        var row = $('<tr>');
+		        var amountCell = $('<td>').text(transaction.amount);
+		        var dtCell = $('<td>').text(new Date(transaction.dt).toLocaleString());
+		        var typeCell = $('<td>').text(transaction.credit ? 'Credit' : 'Debit');
+		        
+		        row.append(amountCell, dtCell, typeCell);
+		        transactionBody.append(row);
+		    });
+		
+		    $('#transactionDetails').show();
+		}
+	</script>
+	</body>
+	</html>

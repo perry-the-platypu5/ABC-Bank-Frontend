@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+	<table border="1">
+	    <thead>
+	        <tr>
+	            <th> Id </th>
+	            <th> UserName </th>
+				<th> Email </th>
+				<th> Address </th>
+				<th> Age </th>
+				<th> PhoneNo </th>
+				<th> Balance </th>
+	        </tr>
+	    </thead>
+	    <tbody>
+		<tr th:if="${cs.customerList.empty}">
+	            <td colspan="2"> No Customers </td>
+	        </tr>
+	        <tr th:each="customer : ${cs.customerList}">
+	            <td><span th:text="${customer.Id}"> Id </span></td>
+	            <td><span th:text="${customer.userName}"> UserName </span></td>
+				<td><span th:text="${customer.email}"> Email </span></td>
+				<td><span th:text="${customer.address}"> Address </span></td>
+				<td><span th:text="${customer.age}"> Age </span></td>
+				<td><span th:text="${customer.phoneNo}"> PhoneNo </span></td>
+				<td><span th:text="${customer.balance}"> Balance </span></td>
+	        </tr>
+	    </tbody>
+	</table>
+</html>
